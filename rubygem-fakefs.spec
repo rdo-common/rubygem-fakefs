@@ -3,8 +3,8 @@
 
 Summary: A fake filesystem. Use it in your tests
 Name: rubygem-%{gem_name}
-Version: 0.4.0
-Release: 4%{?dist}
+Version: 0.4.2
+Release: 1%{?dist}
 Group: Development/Languages
 License: MIT
 URL: http://github.com/defunkt/fakefs
@@ -15,8 +15,7 @@ Requires: ruby
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
 BuildRequires: ruby
-# Use rspec-core until rspec are not migrated to RSpec 2.x
-BuildRequires: rubygem(rspec-core)
+BuildRequires: rubygem(rspec)
 BuildRequires: rubygem(minitest)
 BuildArch: noarch
 Provides: rubygem(%{gem_name}) = %{version}
@@ -48,11 +47,7 @@ cp -a .%{gem_dir}/* \
 %check
 pushd .%{gem_instdir}
 rspec spec
-# Two tests fails. There are some pull request fixing Ruby 1.9.3 issues, however
-# it is not clear which approach will be preferred by upstream.
-# https://github.com/defunkt/fakefs/issues/110
-ruby -I. -Itest -e "Dir['test/**/*_test.rb'].each { |file| require file }" | \
-        grep "430 tests, 582 assertions, 2 failures, 0 errors, 0 skips"
+ruby -I. -Itest -e "Dir['test/**/*_test.rb'].each { |file| require file }"
 popd
 
 %files
@@ -68,14 +63,16 @@ popd
 %doc %{gem_instdir}/CONTRIBUTORS
 %{gem_instdir}/fakefs.gemspec
 %{gem_instdir}/Gemfile
+%{gem_instdir}/Gemfile.lock
 %{gem_instdir}/Rakefile
 %doc %{gem_instdir}/README.markdown
 %{gem_instdir}/spec
 %{gem_instdir}/test
 
 %changelog
-* Fri Mar 01 2013 Vít Ondruch <vondruch@redhat.com> - 0.4.0-4
+* Fri Mar 01 2013 Vít Ondruch <vondruch@redhat.com> - 0.4.2-1
 - Rebuild for https://fedoraproject.org/wiki/Features/Ruby_2.0.0
+- Update to FakeFS 0.4.2.
 
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.4.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
