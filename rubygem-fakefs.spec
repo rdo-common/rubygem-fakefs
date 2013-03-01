@@ -1,19 +1,18 @@
 # Generated from fakefs-0.4.0.gem by gem2rpm -*- rpm-spec -*-
 %global gem_name fakefs
-%global rubyabi 1.9.1
 
 Summary: A fake filesystem. Use it in your tests
 Name: rubygem-%{gem_name}
 Version: 0.4.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Development/Languages
 License: MIT
 URL: http://github.com/defunkt/fakefs
 Source0: http://rubygems.org/gems/%{gem_name}-%{version}.gem
-Requires: ruby(abi) = %{rubyabi}
+Requires: ruby(release)
 Requires: ruby(rubygems)
 Requires: ruby
-BuildRequires: ruby(abi) = %{rubyabi}
+BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
 BuildRequires: ruby
 # Use rspec-core until rspec are not migrated to RSpec 2.x
@@ -37,9 +36,7 @@ Documentation for %{name}
 
 %prep
 %setup -q -c -T
-mkdir -p .%{gem_dir}
-gem install --local --install-dir .%{gem_dir} \
-            --force %{SOURCE0}
+%gem_install -n %{SOURCE0}
 
 %build
 
@@ -77,6 +74,9 @@ popd
 %{gem_instdir}/test
 
 %changelog
+* Fri Mar 01 2013 Vít Ondruch <vondruch@redhat.com> - 0.4.0-4
+- Rebuild for https://fedoraproject.org/wiki/Features/Ruby_2.0.0
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.4.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
