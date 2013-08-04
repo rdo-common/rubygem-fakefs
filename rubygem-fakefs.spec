@@ -4,7 +4,7 @@
 Summary: A fake filesystem. Use it in your tests
 Name: rubygem-%{gem_name}
 Version: 0.4.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Languages
 License: MIT
 URL: http://github.com/defunkt/fakefs
@@ -70,6 +70,9 @@ popd
 %{gem_instdir}/test
 
 %changelog
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.4.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Fri Mar 01 2013 Vít Ondruch <vondruch@redhat.com> - 0.4.2-1
 - Rebuild for https://fedoraproject.org/wiki/Features/Ruby_2.0.0
 - Update to FakeFS 0.4.2.
