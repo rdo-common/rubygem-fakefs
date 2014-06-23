@@ -1,0 +1,28 @@
+From 3f92cc3d5fe1ace84e107a6d37b1c98fd7db7029 Mon Sep 17 00:00:00 2001
+From: Leigh Caplan <lcaplan@onehub.com>
+Date: Mon, 17 Mar 2014 15:59:41 -0700
+Subject: [PATCH] Force encoding for binary string literal in the tests.
+
+Ruby < 2.0 interprets string literals as ASCII-8BIT by default, but
+>= 2.0 assumes all string literals (and source files) are in UTF-8.
+Calling force_encoding ensures this string is interpreted as binary.
+---
+ test/fakefs_test.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/test/fakefs_test.rb b/test/fakefs_test.rb
+index 27b1a37..82cd742 100755
+--- a/test/fakefs_test.rb
++++ b/test/fakefs_test.rb
+@@ -2596,7 +2596,7 @@ def test_file_write_writes_at_offset_and_does_not_truncate
+ 
+     def test_can_read_binary_data_in_binary_mode
+       File.open('foo', 'wb') { |f| f << "\u0000\u0000\u0000\u0003\u0000\u0003\u0000\xA3\u0000\u0000\u0000y\u0000\u0000\u0000\u0000\u0000" }
+-      assert_equal "\x00\x00\x00\x03\x00\x03\x00\xA3\x00\x00\x00y\x00\x00\x00\x00\x00", File.open("foo", "rb").read
++      assert_equal "\x00\x00\x00\x03\x00\x03\x00\xA3\x00\x00\x00y\x00\x00\x00\x00\x00".force_encoding('ASCII-8BIT'), File.open("foo", "rb").read
+     end
+ 
+     def test_can_read_binary_data_in_non_binary_mode
+-- 
+1.9.3
+

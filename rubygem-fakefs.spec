@@ -3,22 +3,19 @@
 
 Summary: A fake filesystem. Use it in your tests
 Name: rubygem-%{gem_name}
-Version: 0.4.2
-Release: 3%{?dist}
+Version: 0.5.2
+Release: 1%{?dist}
 Group: Development/Languages
 License: MIT
 URL: http://github.com/defunkt/fakefs
 Source0: http://rubygems.org/gems/%{gem_name}-%{version}.gem
-Requires: ruby(release)
-Requires: ruby(rubygems)
-Requires: ruby
+Patch0: rubygem-fakefs-0.5.2-Force-encoding-for-binary-string-literal.patch
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
 BuildRequires: ruby
 BuildRequires: rubygem(rspec)
-BuildRequires: rubygem(minitest)
+BuildRequires: rubygem(minitest) < 5
 BuildArch: noarch
-Provides: rubygem(%{gem_name}) = %{version}
 
 %description
 A fake filesystem. Use it in your tests.
@@ -37,6 +34,10 @@ Documentation for %{name}
 %setup -q -c -T
 %gem_install -n %{SOURCE0}
 
+pushd .%{gem_instdir}
+%patch0 -p1
+popd
+
 %build
 
 %install
@@ -44,10 +45,13 @@ mkdir -p %{buildroot}%{gem_dir}
 cp -a .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
 
+chmod a-x %{buildroot}%{gem_instdir}/test/fakefs_test.rb
+
 %check
 pushd .%{gem_instdir}
 rspec spec
-ruby -I. -Itest -e "Dir['test/**/*_test.rb'].each { |file| require file }"
+
+LANG=en_US.utf8 ruby -Itest -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
 popd
 
 %files
@@ -63,13 +67,15 @@ popd
 %doc %{gem_instdir}/CONTRIBUTORS
 %{gem_instdir}/fakefs.gemspec
 %{gem_instdir}/Gemfile
-%{gem_instdir}/Gemfile.lock
 %{gem_instdir}/Rakefile
 %doc %{gem_instdir}/README.markdown
 %{gem_instdir}/spec
 %{gem_instdir}/test
 
 %changelog
+* Mon Jun 23 2014 Vít Ondruch <vondruch@redhat.com> - 0.5.2-1
+- Update to FakeFS 0.5.2.
+
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.4.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
