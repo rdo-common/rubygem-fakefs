@@ -9,6 +9,8 @@ Group: Development/Languages
 License: MIT
 URL: http://github.com/defunkt/fakefs
 Source0: http://rubygems.org/gems/%{gem_name}-%{version}.gem
+# Fix encoding for Ruby 2.1+.
+# https://github.com/onehub/fakefs/commit/3f92cc3d5fe1ace84e107a6d37b1c98fd7db7029
 Patch0: rubygem-fakefs-0.5.2-Force-encoding-for-binary-string-literal.patch
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
