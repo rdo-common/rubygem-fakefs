@@ -1,22 +1,19 @@
 # Generated from fakefs-0.4.0.gem by gem2rpm -*- rpm-spec -*-
 %global gem_name fakefs
 
-Summary: A fake filesystem. Use it in your tests
 Name: rubygem-%{gem_name}
-Version: 0.5.2
-Release: 2%{?dist}
+Version: 0.6.7
+Release: 1%{?dist}
+Summary: A fake filesystem. Use it in your tests
 Group: Development/Languages
 License: MIT
 URL: http://github.com/defunkt/fakefs
-Source0: http://rubygems.org/gems/%{gem_name}-%{version}.gem
-# Fix encoding for Ruby 2.1+.
-# https://github.com/onehub/fakefs/commit/3f92cc3d5fe1ace84e107a6d37b1c98fd7db7029
-Patch0: rubygem-fakefs-0.5.2-Force-encoding-for-binary-string-literal.patch
+Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
 BuildRequires: ruby
 BuildRequires: rubygem(rspec)
-BuildRequires: rubygem(minitest) < 5
+BuildRequires: rubygem(minitest)
 BuildArch: noarch
 
 %description
@@ -30,15 +27,11 @@ Requires: %{name} = %{version}-%{release}
 BuildArch: noarch
 
 %description doc
-Documentation for %{name}
+Documentation for %{name}.
 
 %prep
 %setup -q -c -T
 %gem_install -n %{SOURCE0}
-
-pushd .%{gem_instdir}
-%patch0 -p1
-popd
 
 %build
 
@@ -47,19 +40,23 @@ mkdir -p %{buildroot}%{gem_dir}
 cp -a .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
 
-chmod a-x %{buildroot}%{gem_instdir}/test/fakefs_test.rb
+# https://github.com/defunkt/fakefs/pull/309
+chmod a-x %{buildroot}%{gem_instdir}/{test/fakefs_test.rb,lib/fakefs/file.rb}
 
 %check
 pushd .%{gem_instdir}
 rspec spec
 
-LANG=en_US.utf8 ruby -Itest -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
+# minitest-rg is not available in Fedora yet not it is needed.
+sed -i '/minitest\/rg/ s/^/#/' test/test_helper.rb
+
+ruby -Itest -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
 popd
 
 %files
 %dir %{gem_instdir}
-%doc %{gem_instdir}/LICENSE
 %exclude %{gem_instdir}/.*
+%license %{gem_instdir}/LICENSE
 %{gem_libdir}
 %exclude %{gem_cache}
 %{gem_spec}
@@ -67,6 +64,7 @@ popd
 %files doc
 %doc %{gem_docdir}
 %doc %{gem_instdir}/CONTRIBUTORS
+%{gem_instdir}/etc
 %{gem_instdir}/fakefs.gemspec
 %{gem_instdir}/Gemfile
 %{gem_instdir}/Rakefile
@@ -75,6 +73,9 @@ popd
 %{gem_instdir}/test
 
 %changelog
+* Wed Jun 24 2015 Vít Ondruch <vondruch@redhat.com> - 0.6.7-1
+- Update to FakeFS 0.6.7.
+
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.5.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
