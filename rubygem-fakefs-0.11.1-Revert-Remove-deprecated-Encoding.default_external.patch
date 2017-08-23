@@ -1,0 +1,25 @@
+From 3034b27b14c4b8960c0bafcb31014a3e45ee7efc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?V=C3=ADt=20Ondruch?= <vondruch@redhat.com>
+Date: Wed, 23 Aug 2017 14:20:46 +0200
+Subject: [PATCH] Revert "Remove deprecated Encoding.default_external="
+
+This reverts commit 5c22767bdace27531e32a50cffb8128d00a24759.
+---
+ test/fakefs_test.rb | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/test/fakefs_test.rb b/test/fakefs_test.rb
+index e1980c9..a4afbd2 100644
+--- a/test/fakefs_test.rb
++++ b/test/fakefs_test.rb
+@@ -870,6 +870,7 @@ class FakeFSTest < Minitest::Test
+ 
+   if RUBY_VERSION >= '1.9'
+     def test_file_object_has_default_external_encoding
++      Encoding.default_external = 'UTF-8'
+       path = 'file.txt'
+       File.open(path, 'w') { |f| f.write 'Yatta!' }
+       assert_equal 'UTF-8', File.new(path).read.encoding.name
+-- 
+2.14.1
+

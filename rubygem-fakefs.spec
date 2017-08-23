@@ -2,16 +2,18 @@
 %global gem_name fakefs
 
 Name: rubygem-%{gem_name}
-Version: 0.10.0
-Release: 3%{?dist}
+Version: 0.11.1
+Release: 1%{?dist}
 Summary: A fake filesystem. Use it in your tests
-Group: Development/Languages
 License: MIT
 URL: https://github.com/fakefs/fakefs
 Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
 # git clone https://github.com/fakefs/fakefs.git && cd fakefs/
-# git checkout v0.10.0 && tar czvf fakefs-0.10.0-tests.tgz spec/ test/
+# git checkout v0.11.1 && tar czvf fakefs-0.11.1-tests.tgz spec/ test/
 Source1: fakefs-%{version}-tests.tgz
+# Fix test failures due to encoding.
+# https://github.com/fakefs/fakefs/issues/373
+Patch0: rubygem-fakefs-0.11.1-Revert-Remove-deprecated-Encoding.default_external.patch
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
 BuildRequires: ruby
@@ -25,7 +27,6 @@ A fake filesystem. Use it in your tests.
 
 %package doc
 Summary: Documentation for %{name}
-Group: Documentation
 Requires: %{name} = %{version}-%{release}
 BuildArch: noarch
 
@@ -33,10 +34,19 @@ BuildArch: noarch
 Documentation for %{name}.
 
 %prep
-%setup -q -c -T
-%gem_install -n %{SOURCE0}
+%setup -q -n  %{gem_name}-%{version} -b 1
+
+pushd %{_builddir}
+%patch0 -p1
+popd
 
 %build
+# Create the gem as gem install only works on a gem file
+gem build ../%{gem_name}-%{version}.gemspec
+
+# %%gem_install compiles any C extensions and installs the gem into ./%%gem_dir
+# by default, so that we can move it into the buildroot in %%install
+%gem_install
 
 %install
 mkdir -p %{buildroot}%{gem_dir}
@@ -46,7 +56,8 @@ cp -a .%{gem_dir}/* \
 
 %check
 pushd .%{gem_instdir}
-tar xzvf %{SOURCE1}
+ln -s %{_builddir}/{spec,test} .
+
 rspec spec
 
 # Get rid of Bundler.
@@ -70,6 +81,9 @@ popd
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Wed Aug 23 2017 Vít Ondruch <vondruch@redhat.com> - 0.11.1-1
+- Update to FakeFS 0.11.1.
+
 * Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 0.10.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
