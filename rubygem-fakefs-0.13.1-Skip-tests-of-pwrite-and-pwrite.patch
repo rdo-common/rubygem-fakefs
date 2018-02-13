@@ -1,0 +1,12 @@
+diff --git a/test/fakefs_test.rb b/test/fakefs_test.rb
+index 35f454c..ff7c827 100644
+--- a/test/fakefs_test.rb
++++ b/test/fakefs_test.rb
+@@ -1405,6 +1405,7 @@ class FakeFSTest < Minitest::Test
+   end
+ 
+   (RealFile.instance_methods - omitted_file_methods).each do |method_name|
++    next if [:pwrite, :pread].include? method_name
+     define_method("test_#{method_name}_method_in_file_is_in_fake_fs_file") do
+       assert File.instance_methods.include?(method_name), "#{method_name} method is not available in File :("
+     end

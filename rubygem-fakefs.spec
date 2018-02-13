@@ -2,18 +2,18 @@
 %global gem_name fakefs
 
 Name: rubygem-%{gem_name}
-Version: 0.11.1
-Release: 2%{?dist}
+Version: 0.13.1
+Release: 1%{?dist}
 Summary: A fake filesystem. Use it in your tests
 License: MIT
 URL: https://github.com/fakefs/fakefs
 Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
 # git clone https://github.com/fakefs/fakefs.git && cd fakefs/
-# git checkout v0.11.1 && tar czvf fakefs-0.11.1-tests.tgz spec/ test/
+# git checkout v0.13.1 && tar czvf fakefs-0.13.1-tests.tgz spec/ test/
 Source1: fakefs-%{version}-tests.tgz
-# Fix test failures due to encoding.
-# https://github.com/fakefs/fakefs/issues/373
-Patch0: rubygem-fakefs-0.11.1-Revert-Remove-deprecated-Encoding.default_external.patch
+# Skip test of methods introduced in Ruby 2.5.
+# https://github.com/fakefs/fakefs/issues/390
+Patch0: rubygem-fakefs-0.13.1-Skip-tests-of-pwrite-and-pwrite.patch
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
 BuildRequires: ruby
@@ -54,6 +54,7 @@ cp -a .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
 
 
+
 %check
 pushd .%{gem_instdir}
 ln -s %{_builddir}/{spec,test} .
@@ -81,6 +82,9 @@ popd
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Tue Feb 13 2018 Vít Ondruch <vondruch@redhat.com> - 0.13.1-1
+- Update to FakeFS 0.13.1.
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.11.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
