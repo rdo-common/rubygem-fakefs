@@ -3,7 +3,7 @@
 
 Name: rubygem-%{gem_name}
 Version: 0.13.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A fake filesystem. Use it in your tests
 License: MIT
 URL: https://github.com/fakefs/fakefs
@@ -82,6 +82,9 @@ popd
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.13.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
 * Tue Feb 13 2018 Vít Ondruch <vondruch@redhat.com> - 0.13.1-1
 - Update to FakeFS 0.13.1.
 
