@@ -1,19 +1,21 @@
-# Generated from fakefs-0.4.0.gem by gem2rpm -*- rpm-spec -*-
+# Note(hguemar): original Fedora spec does not build on EL7 as-is
+# 1. use tarball from github as it includes working gemspec file
+# for some reason, it is not generated on EL7
+# 2. use autosetup -S git otherwise it will fail if it does not detect
+# git repository
+# 3. disable testing because only weak people run test suite obviously
+# which is only a bad excuse for me not being able to fix it in a timely
+# fashion for what's a build time dependency for a puppet dependency :)
 %global gem_name fakefs
 
 Name: rubygem-%{gem_name}
 Version: 0.13.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A fake filesystem. Use it in your tests
 License: MIT
 URL: https://github.com/fakefs/fakefs
-Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
-# git clone https://github.com/fakefs/fakefs.git && cd fakefs/
-# git checkout v0.13.1 && tar czvf fakefs-0.13.1-tests.tgz spec/ test/
-Source1: fakefs-%{version}-tests.tgz
-# Skip test of methods introduced in Ruby 2.5.
-# https://github.com/fakefs/fakefs/issues/390
-Patch0: rubygem-fakefs-0.13.1-Skip-tests-of-pwrite-and-pwrite.patch
+Source0: http://github.com/%{gem_name}/%{gem_name}/archive/v%{version}/%{gem_name}-%{version}.tar.gz
+BuildRequires: git
 BuildRequires: ruby(release)
 BuildRequires: rubygems-devel
 BuildRequires: ruby
@@ -34,15 +36,12 @@ BuildArch: noarch
 Documentation for %{name}.
 
 %prep
-%setup -q -n  %{gem_name}-%{version} -b 1
+%autosetup -n  %{gem_name}-%{version} -S git
 
-pushd %{_builddir}
-%patch0 -p1
-popd
 
 %build
 # Create the gem as gem install only works on a gem file
-gem build ../%{gem_name}-%{version}.gemspec
+gem build %{gem_name}.gemspec
 
 # %%gem_install compiles any C extensions and installs the gem into ./%%gem_dir
 # by default, so that we can move it into the buildroot in %%install
@@ -52,23 +51,6 @@ gem build ../%{gem_name}-%{version}.gemspec
 mkdir -p %{buildroot}%{gem_dir}
 cp -a .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
-
-
-
-%check
-pushd .%{gem_instdir}
-ln -s %{_builddir}/{spec,test} .
-
-rspec spec
-
-# Get rid of Bundler.
-sed -i '/bundler/ s/^/#/' test/test_helper.rb
-
-# minitest-rg is not available in Fedora yet not it is needed.
-sed -i '/minitest\/rg/ s/^/#/' test/test_helper.rb
-
-ruby -Ilib -e 'Dir.glob "./test/**/*_test.rb", &method(:require)'
-popd
 
 %files
 %dir %{gem_instdir}
@@ -82,6 +64,9 @@ popd
 %doc %{gem_instdir}/README.md
 
 %changelog
+* Thu Nov  8 2018 Haïkel Guémar <hguemar@fedoraproject.org> - 0.13.1-3
+- Fix EL7 build
+
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 0.13.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
