@@ -10,7 +10,7 @@
 
 Name: rubygem-%{gem_name}
 Version: 0.13.1
-Release: 3%{?dist}
+Release: 3%{?dist}.1
 Summary: A fake filesystem. Use it in your tests
 License: MIT
 URL: https://github.com/fakefs/fakefs
@@ -21,6 +21,7 @@ BuildRequires: rubygems-devel
 BuildRequires: ruby
 BuildRequires: rubygem(rspec)
 BuildRequires: rubygem(minitest)
+Provides: rubygem(%{gem_name}) = %{version}
 BuildArch: noarch
 
 %description
